@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DenDron - Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <h1>DenDron</h1>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p>New user? <a href="/register.html">Sign up</a></p>
+  </div>
+
+  <script type="module">
+    import { login } from '/js/auth.js'
+    
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      
+      const username = document.getElementById('username').value
+      const password = document.getElementById('password').value
+      
+      const { error } = await login(username, password)
+      
+      if (error) {
+        alert(`Login failed: ${error.message}`)
+      } else {
+        window.location.href = '/feed.html'
+      }
+    })
+  </script>
+</body>
+</html>

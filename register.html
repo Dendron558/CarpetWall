@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DenDron - Sign Up</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>Register | DenDron</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="auth-container">
+  <div class="auth-box">
     <h1>Create Account</h1>
     <form id="register-form">
-      <input type="text" id="username" placeholder="Username (3-24 chars)" required>
-      <input type="password" id="password" placeholder="Password (12+ chars)" required>
+      <input type="text" id="username" placeholder="Username" required 
+             pattern="[a-zA-Z0-9_]{3,24}" title="3-24 characters (letters, numbers, _)">
+      <input type="password" id="password" placeholder="Password" required
+             minlength="12" title="12+ characters with mix of letters, numbers, symbols">
       <button type="submit">Sign Up</button>
     </form>
-    <p>Already have an account? <a href="/login.html">Login</a></p>
+    <p>Already have an account? <a href="login.html">Login</a></p>
   </div>
 
   <script type="module">
-    import { signUp } from '/js/auth.js'
+    import { signUp } from './auth.js'
     
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault()
-      
-      const username = document.getElementById('username').value
-      const password = document.getElementById('password').value
-      
-      const { error } = await signUp(username, password)
-      
+      const { error } = await signUp(
+        document.getElementById('username').value,
+        document.getElementById('password').value
+      )
       if (error) {
-        alert(`Signup failed: ${error.message}`)
+        alert('Registration failed: ' + error.message)
       } else {
         alert('Account created! Please login.')
-        window.location.href = '/login.html'
+        window.location.href = 'login.html'
       }
     })
   </script>

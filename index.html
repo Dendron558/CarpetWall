@@ -1,12 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>DenDron</title>
-  <!-- No CSS folder -->
-  <link rel="stylesheet" href="style.css">
+  <title>DenDron Feed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #auth-status {
+      text-align: right;
+      padding: 10px;
+      background: #f0f0f0;
+    }
+    #post-form {
+      margin: 20px 0;
+    }
+    #posts-container {
+      margin-top: 20px;
+    }
+    .post {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-  <script type="module" src="auth.js"></script>
-  <script type="module" src="app.js"></script>
+  <div id="auth-status">
+    <span id="username-display"></span>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div id="post-form">
+    <textarea id="post-content" placeholder="What's happening?"></textarea>
+    <button onclick="createPost()">Post</button>
+  </div>
+
+  <div id="posts-container"></div>
+
+  <script type="module">
+    import { supabase, getCurrentUser, logout } from './auth.js'
+    import { loadPosts, createPost } from './posts.js'
+    
+    // Expose to global scope for HTML onclick
+    window.logout = logout
+    window.createPost = createPost
+
+    // Check auth
+    const user = getCurrentUser()
+    if (!user) window.location.href = 'login.html'
+    
+    // Display username
+    document.getElementById('username-display').textContent = user.username
+    
+    // Load posts
+    loadPosts()
+  </script>
 </body>
 </html>

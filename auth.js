@@ -1,17 +1,24 @@
-// auth.js
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+// Add this to your existing auth.js
+export async function signUp(username, password) {
+  // Validate input
+  if (!username || !password) {
+    return { error: { message: 'Username and password required' } }
+  }
 
-// Initialize Supabase (use your actual credentials)
-export const supabase = createClient(
-  'https://vkukjpdjhrgsjznjcpgx.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdWtqcGRqaHJnc2p6bmpjcGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNDYxNzIsImV4cCI6MjA1ODkyMjE3Mn0.IKzl8Lpg6gwV1Y_7jnjSqs2L8LwmoYrqvMGh0D--Gfg'
-)
-
-// Add other auth functions...
-export async function login(username, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signUp({
     email: `${username}@dendron.dummy`,
-    password
+    password,
+    options: {
+      data: { username } // Store username in user_metadata
+    }
   })
-  return { data, error }
+
+  if (error) return { error }
+  
+  // Create profile in your database
+  await supabase
+    .from('profiles')
+    .insert({ id: data.user.id, username })
+    
+  return { data }
 }

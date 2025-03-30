@@ -6,13 +6,17 @@
 </head>
 <body>
   <div class="auth-container">
-    <h1>DenDron</h1>
+    <h1><img src="/assets/logo.svg" alt="DenDron"></h1>
     <form id="login-form">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
+      <input type="text" id="username" placeholder="Username" required 
+             pattern="[a-zA-Z0-9_]{3,24}" title="3-24 alphanumeric chars">
+      
+      <input type="password" id="password" placeholder="Password" required
+             minlength="12" title="12+ chars with uppercase, number & symbol">
+      
       <button type="submit">Login</button>
     </form>
-    <p>New user? <a href="/register.html">Sign up</a></p>
+    <p class="auth-link">New user? <a href="/register.html">Create account</a></p>
   </div>
 
   <script type="module">
@@ -21,13 +25,17 @@
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault()
       
-      const username = document.getElementById('username').value
-      const password = document.getElementById('password').value
+      const submitBtn = e.target.querySelector('button[type="submit"]')
+      submitBtn.disabled = true
       
-      const { error } = await login(username, password)
+      const { error } = await login(
+        e.target.username.value.trim(),
+        e.target.password.value
+      )
       
       if (error) {
-        alert(`Login failed: ${error.message}`)
+        alert(`${error.message} (Code: ${error.code})`)
+        submitBtn.disabled = false
       } else {
         window.location.href = '/feed.html'
       }

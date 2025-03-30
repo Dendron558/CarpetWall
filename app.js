@@ -1,25 +1,24 @@
-import { getStoredSession } from './session.js'
+// app.js
 import { supabase } from './auth.js'
 
-async function initApp() {
-  // Check existing session
-  const session = await getStoredSession() || await supabase.auth.getSession()
+async function checkAuth() {
+  const { data: { session } } = await supabase.auth.getSession()
   
-  if (!session?.access_token) {
-    window.location.href = '/login.html'
-    return
+  if (!session) {
+    window.location.href = 'login.html'
+  } else {
+    console.log('User logged in:', session.user)
+    // Load your app content here
+    document.body.innerHTML = `
+      <h1>Welcome to DenDron!</h1>
+      <button onclick="logout()">Logout</button>
+    `
   }
-
-  // Validate session with Supabase
-  const { error } = await supabase.auth.getUser(session.access_token)
-  if (error) {
-    console.error('Session invalid:', error)
-    window.location.href = '/login.html'
-    return
-  }
-
-  // Load app
-  console.log('Authenticated user:', session.user)
 }
 
-document.addEventListener('DOMContentLoaded', initApp)
+window.logout = async () => {
+  await supabase.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+checkAuth()

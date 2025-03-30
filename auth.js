@@ -1,12 +1,20 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// Initialize Supabase
 const supabase = createClient(
   'https://vkukjpdjhrgsjznjcpgx.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdWtqcGRqaHJnc2p6bmpjcGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNDYxNzIsImV4cCI6MjA1ODkyMjE3Mn0.IKzl8Lpg6gwV1Y_7jnjSqs2L8LwmoYrqvMGh0D--Gfg'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdWtqcGRqaHJnc2p6bmpjcGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNDYxNzIsImV4cCI6MjA1ODkyMjE3Mn0.IKzl8Lpg6gwV1Y_7jnjSqs2L8LwmoYrqvMGh0D--Gfg',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true
+    }
+  }
 )
 
 // USER REGISTRATION
 export async function signUp(username, password) {
+  // Validate username
   if (!/^[a-z0-9_]{3,24}$/i.test(username)) {
     return { error: 'Username must be 3-24 alphanumeric characters' }
   }
@@ -20,7 +28,7 @@ export async function signUp(username, password) {
 
   if (exists) return { error: 'Username already taken' }
 
-  // Create auth account
+  // Create account
   const { data, error } = await supabase.auth.signUp({
     email: `${username}@dendron.dummy`,
     password,
@@ -52,7 +60,7 @@ export async function login(username, password) {
 
   if (error) return { error: error.message }
   
-  // Store session
+  // Store minimal session data
   localStorage.setItem('dendron_session', JSON.stringify({
     user: {
       id: data.user.id,
@@ -64,10 +72,16 @@ export async function login(username, password) {
   return { data }
 }
 
-// USER LOGOUT
+// USER LOGOUT (FULLY WORKING VERSION)
 export async function logout() {
+  // 1. Sign out from Supabase
   await supabase.auth.signOut()
+  
+  // 2. Clear local session
   localStorage.removeItem('dendron_session')
+  
+  // 3. Redirect to login page
+  window.location.href = 'login.html'
 }
 
 // GET CURRENT USER
@@ -83,5 +97,5 @@ export function getCurrentUser() {
   }
 }
 
-// EXPORT ESSENTIAL FUNCTIONS
+// Export essential functions
 export { supabase, getCurrentUser, logout }
